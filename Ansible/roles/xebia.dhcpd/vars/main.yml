@@ -1,3 +1,5 @@
+# file: roles/xebia.dhcpd/vars/main
+---
 dhcpd_conf_dir: "etc/dhcp/dhcpd.conf"
 dhcpd_default_dir: "etc/default/isc-dhcp-server"
 dhcpd_options: "-4"

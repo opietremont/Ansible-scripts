@@ -1,4 +1,4 @@
-#roles/xebia.ntp/meta/main.yml
+# file: roles/xebia.ntp/meta/main
 ---
 dependencies: []
 

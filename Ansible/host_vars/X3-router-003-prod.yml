@@ -1,4 +1,4 @@
-# file: host_vars/X3-router-003
+# file: host_vars/X3-router-003-prod
 ---
 ansible_host: "10.3.120.10"
 ansible_hostname: "X3-router-003"
@@ -350,23 +350,3 @@ firewall: {
     }
   }
 }
-
-#iptables: {
-#  hosts: {
-#    h_awsLvmh: {
-#      fqdn: "ec2-54-229-247-23.eu-west-1.compute.amazonaws.com"
-#    },
-#    h_intLvmh: {
-#      fqdn: "tracker-int.piis.louisvuitton.com"
-#    },
-#    h_pprodLvmh: {
-#      fqdn: "tracker-prp.piis.louisvuitton.com"
-#    },
-#    h_prodLvmh: {
-#      fqdn: "tracker.piis.louisvuitton.com"
-#    }
-#  },
-#  rules: {
-#
-#  }
-#}

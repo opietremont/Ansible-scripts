@@ -1,6 +1,5 @@
-# file: gateway.yml
+# file: gateway
 ---
-
 - hosts: gateway
   # user: sysadm
   become: yes

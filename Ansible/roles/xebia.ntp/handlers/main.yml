@@ -1,4 +1,4 @@
-#roles/xebia.ntp/handlers/main.yml
+# file: roles/xebia.ntp/handlers/main
 ---
 - name: Restart ntp
   service:

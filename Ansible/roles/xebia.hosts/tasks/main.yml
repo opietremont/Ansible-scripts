@@ -1,4 +1,4 @@
-#roles/xebia.hosts/tasks/main.yml
+# file: roles/xebia.hosts/tasks/main
 ---
 - name: Set Hostname.
   hostname:

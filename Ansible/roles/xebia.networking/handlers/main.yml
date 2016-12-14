@@ -1,4 +1,4 @@
-#roles/xebia.networking/handlers/main.yml
+# file: roles/xebia.networking/handlers/main
 ---
 - name: Restart networking
   shell: service networking restart; sleep 3

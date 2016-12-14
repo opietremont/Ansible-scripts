@@ -1,4 +1,4 @@
-# file: group_vars/all.yml
+# file: group_vars/all-prod
 ---
 #DNS Global variables:
 dns_servers: {

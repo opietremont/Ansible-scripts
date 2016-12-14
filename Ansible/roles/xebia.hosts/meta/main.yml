@@ -1,4 +1,4 @@
-#roles/xebia.hosts/meta/main.yml
+# file: roles/xebia.hosts/meta/main
 ---
 dependencies: []
 

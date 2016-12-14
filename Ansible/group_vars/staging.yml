@@ -1,4 +1,4 @@
-# file: group_vars/staging.yml
+# file: group_vars/staging
 ---
 ansible_user: 'sysadm'
 ansible_ssh_pass: 'Xebia2015'

@@ -1,4 +1,4 @@
-#roles/xebia.networking/tasks/main.yml
+# file: roles/xebia.networking/tasks/main
 ---
 - name: Install VLAN.
   apt:
@@ -38,4 +38,4 @@
     dest: "{{ network_device_path }}/device-{{ item.key }}"
   with_dict: "{{ network_interfaces }}"
   when: network_manage_config
-#  notify: Restart networking
+  notify: Restart networking

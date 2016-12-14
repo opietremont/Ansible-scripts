@@ -1,4 +1,4 @@
-#roles/xebia.firewall/vars/main.yml
+# file: roles/xebia.firewall/vars/main
 ---
 iptables_conf_path: "/etc/iptables"
 iptables_rules_available_path: "/etc/iptables/rules-available"
