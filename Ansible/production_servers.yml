@@ -1,0 +1,7 @@
+# file: production
+---
+[gateway]
+10.3.12.1
+
+[production:children]
+gateway

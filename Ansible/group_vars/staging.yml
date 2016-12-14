@@ -1,0 +1,7 @@
+# file: group_vars/staging.yml
+---
+ansible_user: 'sysadm'
+ansible_ssh_pass: 'Xebia2015'
+ansible_port: '22'
+ansible_become_user: 'root'
+ansible_become_pass: 'xebia'

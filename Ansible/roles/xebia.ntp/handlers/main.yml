@@ -1,0 +1,9 @@
+#roles/xebia.ntp/handlers/main.yml
+---
+- name: Restart ntp
+  service:
+    name: ntp
+    state: restarted
+
+- name: Synchronize ntp
+  command: /usr/sbin/ntpd -gq

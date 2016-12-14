@@ -1,0 +1,4 @@
+#roles/xebia.networking/vars/main.yml
+---
+network_interfaces_path: "/etc/network/interfaces"
+network_device_path: "/etc/network/interfaces.d"

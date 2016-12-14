@@ -1,0 +1,40 @@
+# {{ ansible_managed }}
+
+{% if item.value.auto is defined and item.value.auto %}
+auto {{ item.key }}
+{% endif %}
+{% if item.value.allow is defined and item.value.allow %}
+allow-{{ item.value.allow }}
+{% endif %}
+{% if item.value.comment is defined and item.value.comment %}
+# {{ item.comment }}
+{% endif %}
+{% if item.value.ipversion is defined and item.value.ipversion == '6' %}
+iface {{ item.key }} inet6 {{ item.value.mode | default('manual', true) }}
+{% else %}
+iface {{ item.key }} inet {{ item.value.mode | default('manual', true) }}
+{% endif %}
+{% if item.value.cidr is defined and item.value.cidr %}
+    address   {{ item.value.cidr | ipaddr('address') }}
+    network   {{ item.value.cidr | ipaddr('network') }}
+    netmask   {{ item.value.cidr | ipaddr('netmask') }}
+    broadcast {{ item.value.cidr | ipaddr('broadcast') }}
+{% if item.value.gateway is defined and item.value.gateway %}
+    gateway {{ item.value.gateway | ipaddr('address') }}
+{% endif %}
+{% endif %}
+{% if item.value.vlan is defined and item.value.vlan == true %}
+  vlan-raw-device {{ item.value.raw_device }}
+{% endif %}
+{% if item.value.nameservers is defined and item.value.nameservers %}
+  dns-nameservers {{ item.value.nameservers | join(' ') }}
+{% endif %}
+{% if item.value.dns_search is defined and item.value.dns_search %}
+  dns-search {{ item.value.dns_search }}
+{% endif %}
+{% if item.value.pre_up is defined and item.value.pre_up %}
+    pre-up {{ item.value.pre_up }}
+{% endif %}
+{% if item.value.post_down is defined and item.value.post_down %}
+    post-down {{ item.value.post_down }}
+{% endif %}

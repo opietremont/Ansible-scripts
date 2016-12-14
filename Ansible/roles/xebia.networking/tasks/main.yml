@@ -1,0 +1,41 @@
+#roles/xebia.networking/tasks/main.yml
+---
+- name: Install VLAN.
+  apt:
+    pkg: vlan
+    state: present
+
+- name: Configure interfaces file.
+  template:
+    src: interfaces.j2
+    dest: "{{ network_interfaces_path }}"
+  when: network_manage_config
+
+- name: Create Device folder.
+  file:
+    path: "{{ network_device_path }}"
+    state: directory
+  when: network_manage_config
+  register: dir_status
+
+- name: Get existing device configuration.
+  command: "find {{ network_device_path }} -type f"
+  when: network_manage_config
+  register: device_existing_files
+
+- name: Clean existing device configuration.
+  file:
+    dest: "{{ item }}"
+    state: absent
+  when:
+    - not dir_status.changed
+    - network_manage_config
+  with_items: "{{ device_existing_files.stdout_lines | default() }}"
+
+- name: Configure device file.
+  template:
+    src: device.j2
+    dest: "{{ network_device_path }}/device-{{ item.key }}"
+  with_dict: "{{ network_interfaces }}"
+  when: network_manage_config
+#  notify: Restart networking

@@ -1,0 +1,20 @@
+#roles/xebia.networking/meta/main.yml
+---
+dependencies: []
+
+galaxy_info:
+  author: 'Olivier PIETREMONT'
+  description: 'Configure INTERFACES'
+  company: 'Xebia'
+  license: 'GNU General Public License v3'
+  min_ansible_version: '1.0.0'
+  platforms:
+  - name: Debian
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  categories:
+  - system
+  - networking

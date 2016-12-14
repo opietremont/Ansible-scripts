@@ -1,0 +1,372 @@
+# file: host_vars/X3-router-003
+---
+ansible_host: "10.3.120.10"
+ansible_hostname: "X3-router-003"
+network_manage_config: true
+hosts_manage_config: true
+ntp_manage_config: true
+dhcp_manage_config: true
+firewall_manage_config: true
+
+
+network_interfaces: {
+  eth0: {
+    mode: "manual",
+    vlan: false,
+    auto: true,
+    allow: "hotplug",
+    pre_up: "ifconfig $IFACE up",
+    post_down: "ifconfig $IFACE down"
+  },
+  eth1: {
+    mode: "manual",
+    vlan: false,
+    auto: true,
+    allow: "hotplug",
+    pre_up: "ifconfig $IFACE up",
+    post_down: "ifconfig $IFACE down"
+  },
+  eth2: {
+    mode: "dhcp",
+    vlan: false,
+    auto: true,
+    allow: "hotplug"
+  },
+  eth3: {
+    mode: "static",
+    cidr: "10.3.120.10/22",
+    gateway: "10.3.120.1",
+    vlan: false,
+    auto: true,
+    allow: "hotplug"
+#    mode: "static",
+#    cidr: "192.168.0.254/24",
+##    gateway: "192.168.0.1",
+#    vlan: false,
+#    auto: true,
+#    allow: "hotplug"
+  },
+  vlan100: {
+    mode: "static",
+    cidr: "10.6.100.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth0",
+  },
+  vlan101: {
+    mode: "static",
+    cidr: "10.6.104.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth0"
+  },
+  vlan110: {
+    mode: "static",
+    cidr: "10.6.4.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth0"
+  },
+  vlan111: {
+    mode: "static",
+    cidr: "10.6.8.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth1"
+  },
+  vlan112: {
+    mode: "static",
+    cidr: "10.6.12.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth1"
+  },
+  vlan300: {
+    mode: "static",
+    cidr: "10.6.200.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth1"
+  },
+  vlan400: {
+    mode: "static",
+    cidr: "10.6.0.1/22",
+    vlan: true,
+    auto: true,
+    allow: "hotplug",
+    raw_device: "eth1"
+  }
+}
+
+dhcpd: {
+	mode: "server",
+	authoritative: true,
+	log_facility: "local7",
+	interfaces: [ "vlan100", "vlan101", "vlan110", "vlan111", "vlan112", "vlan300", "vlan400" ],
+	global_default_lease_time: "600",
+	global_max_lease_time: "7200",
+	subnets: {
+		vlan100: {
+		  comment: "VLAN100 : Public - Generated automatically by Ansible",
+          range: "10.6.101.0 10.6.102.255",
+          router: "10.6.100.1/22",
+		},
+		vlan101: {
+		  comment: "VLAN101 : Client - Generated automatically by Ansible",
+          range: "10.6.105.0 10.6.106.255",
+          router: "10.6.104.1/22",
+		},
+		vlan110: {
+		  comment: "VLAN110 : VoIP - Generated automatically by Ansible",
+          range: "10.6.5.0 10.6.6.255",
+          router: "10.6.4.1/22",
+          options: [
+            "default-lease-time 3600;",
+            "max-lease-time 86400;"]
+		},
+		vlan111: {
+		  comment: "VLAN111 : Comptabilite - Generated automatically by Ansible",
+          range: "10.6.9.0 10.6.10.255",
+          router: "10.6.8.1/22",
+		},
+		vlan112: {
+          comment: "VLAN112 : Xebia - Generated automatically by Ansible",
+          range: "10.6.13.0 10.6.14.255",
+          router: "10.6.12.1/22",
+          options: [
+            "default-lease-time 3600;",
+            "max-lease-time 86400;"]
+		},
+		vlan300: {
+		  comment: "VLAN300 : Video-surveillance - Generated automatically by Ansible",
+          range: "10.6.201.0 10.6.202.255",
+          router: "10.6.200.1/22",
+          options: [
+            "default-lease-time 3600;",
+            "max-lease-time 86400;"]
+		},
+		vlan400: {
+		  comment: "VLAN400 : Reseaux - Generated automatically by Ansible",
+          range: "10.6.1.0 10.6.2.255",
+          router: "10.6.0.1/22",
+          options: [
+            "default-lease-time 3600;",
+            "max-lease-time 86400;"]
+		}
+	},
+	include: "/etc/dhcp/dhcp-hosts.conf"
+}
+
+network_objects_local: {
+  p_tcp_synology: {
+    category: "port",
+    type: "tcp",
+    value: "5000:5001"
+  },
+  n_vpnAdmins: {
+    name: "n_vpnAdmins",
+    category: "network",
+    type: "network",
+    value: "10.6.20.0/22"
+  },
+  n_vpnAdministratif: {
+    name: "n_vpnAdministratif",
+    category: "network",
+    type: "network",
+    value: "10.6.28.0/22"
+  },
+  n_vpnXebia: {
+    name: "n_vpnXebia",
+    category: "network",
+    type: "network",
+    value: "10.6.16.0/22"
+  },
+  n_Public: {
+    name: "n_Public",
+    category: "network",
+    type: "network",
+    value: "10.6.100.0/22"
+  },
+  n_Client: {
+    name: "n_Client",
+    category: "network",
+    type: "network",
+    value: "10.6.104.0/22"
+  },
+  n_Voip: {
+    name: "n_Voip",
+    category: "network",
+    type: "network",
+    value: "10.6.4.0/22"
+  },
+  n_Administratif: {
+    name: "n_Administratif",
+    category: "network",
+    type: "network",
+    value: "10.6.8.0/22"
+  },
+  n_Xebia: {
+    name: "n_Xebia",
+    category: "network",
+    type: "network",
+    value: "10.6.12.0/22"
+  },
+  n_Camera: {
+    name: "n_Camera",
+    category: "network",
+    type: "network",
+    value: "10.6.200.0/22"
+  },
+  n_Reseau: {
+    name: "n_Reseau",
+    category: "network",
+    type: "network",
+    value: "10.6.0.0/22"
+  }
+}
+
+firewall: {
+  modprobe: ["ip_tables", "iptable_filter", "iptable_mangle", "iptable_nat", "ip_conntrack", "ip_conntrack_ftp", "ip_conntrack_tftp"],
+  options: {
+    localhost: true,
+    icmp: true
+  },
+  rules: {
+    r_NAT: {
+      order: "01",
+      state: true,
+      comment: "NAT Networks",
+      contents: [
+        {"line": "01", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Public.name }}", "target": "MASQUERADE"},
+        {"line": "02", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Client.name }}", "target": "MASQUERADE"},
+        {"line": "03", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Voip.name }}", "target": "MASQUERADE"},
+        {"line": "04", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Administratif.name }}", "target": "MASQUERADE"},
+        {"line": "05", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Xebia.name }}", "target": "MASQUERADE"},
+        {"line": "06", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Camera.name }}", "target": "MASQUERADE"},
+        {"line": "07", "table": "nat", "append": "POSTROUTING", "source": "{{ network_objects_local.n_Reseau.name }}", "target": "MASQUERADE"}
+      ]
+    },
+    r_Administratif: {
+      order: "02",
+      state: true,
+      comment: "vlan Administratif",
+      contents: [
+        {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "destination": "{{ network_objects_local.n_vpnAdmins.name }}", "target": "ACCEPT"},
+        {"line": "02", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "destination": "{{ network_objects_local.n_vpnAdministratif.name }}", "target": "ACCEPT"},
+        {"line": "03", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_tcp_reseaux }}", "target": "ACCEPT"},
+        {"line": "04", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_udp_reseaux }}", "target": "ACCEPT"},
+        {"line": "05", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "destination": "{{ network_objects_global.n_3eme_etage.name }}", "target": "DROP"},
+        {"line": "06", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "dports": "{{ network_objects_global.p_tcp_torrent }}", "target": "DROP"},
+        {"line": "07", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "dports": "{{ network_objects_global.p_udp_torrent }}", "target": "DROP"},
+        {"line": "08", "append": "FORWARD", "source": "{{ network_objects_local.n_Administratif.name }}", "target": "ACCEPT"},
+      ]
+    },
+    r_Camera: {
+      order: "03",
+      state: true,
+      comment: "vlan Camera",
+      contents: [
+        {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Camera.name }}", "target": "ACCEPT"}
+      ]
+    },
+    r_Client: {
+      order: "04",
+      state: true,
+      comment: "vlan Client",
+      contents: [
+        {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_vpnAdmins.name }}", "target": "ACCEPT"},
+        {"line": "02", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_vpnAdministratif.name }}", "target": "ACCEPT"},
+        {"line": "03", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_Xebia.name }}", "target": "ACCEPT"},
+        {"line": "04", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_vpnXebia.name }}", "target": "ACCEPT"},
+#        {"line": "05", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_vpnClient.name }}", "target": "ACCEPT"},
+        {"line": "06", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_tcp_reseaux }}", "target": "ACCEPT"},
+        {"line": "07", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_udp_reseaux }}", "target": "ACCEPT"},
+        {"line": "08", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "destination": "{{ network_objects_global.n_3eme_etage.name }}", "target": "DROP"},
+        {"line": "09", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "dports": "{{ network_objects_global.p_tcp_torrent }}", "target": "DROP"},
+        {"line": "10", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "dports": "{{ network_objects_global.p_udp_torrent }}", "target": "DROP"},
+        {"line": "11", "append": "FORWARD", "source": "{{ network_objects_local.n_Client.name }}", "target": "ACCEPT"},
+      ]
+    },
+    r_Public: {
+        order: "05",
+        state: true,
+        comment: "vlan Public",
+        contents: [
+          {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "destination": "{{ network_objects_local.n_vpnAdmins.name }}", "target": "ACCEPT"},
+          {"line": "02", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_tcp_reseaux }}", "target": "ACCEPT"},
+          {"line": "03", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_udp_reseaux }}", "target": "ACCEPT"},
+          {"line": "04", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "destination": "{{ network_objects_global.n_3eme_etage.name }}", "target": "DROP"},
+          {"line": "05", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "dports": "{{ network_objects_global.p_tcp_public1 }}", "target": "ACCEPT"},
+          {"line": "06", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "dports": "{{ network_objects_global.p_tcp_public2 }}", "target": "ACCEPT"},
+          {"line": "07", "append": "FORWARD", "source": "{{ network_objects_local.n_Public.name }}", "dports": "{{ network_objects_global.p_udp_public }}", "target": "ACCEPT"},
+        ]
+      },
+      r_Reseau: {
+        order: "06",
+        state: true,
+        comment: "vlan Reseau",
+        contents: [
+          {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Reseau.name }}", "target": "ACCEPT"}
+        ]
+      },
+      r_Voip: {
+        order: "07",
+        state: true,
+        comment: "vlan VoIP",
+        contents: [
+          {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_local.n_vpnAdmins.name }}", "target": "ACCEPT"},
+          {"line": "02", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_local.n_Xebia.name }}", "target": "ACCEPT"},
+          {"line": "03", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_local.n_vpnXebia.name }}", "target": "ACCEPT"},
+          {"line": "04", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_tcp_reseaux }}", "target": "ACCEPT"},
+          {"line": "05", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", dports: "{{ network_objects_global.p_udp_reseaux }}", "target": "ACCEPT"},
+          {"line": "06", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "destination": "{{ network_objects_global.n_3eme_etage.name }}", "target": "DROP"},
+          {"line": "07", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "dports": "{{ network_objects_global.p_tcp_torrent }}", "target": "DROP"},
+          {"line": "08", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "dports": "{{ network_objects_global.p_udp_torrent }}", "target": "DROP"},
+          {"line": "09", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "dports": "{{ network_objects_global.p_tcp_voip }}", "target": "ACCEPT"},
+          {"line": "10", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "dports": "{{ network_objects_global.p_udp_voip1 }}", "target": "ACCEPT"},
+          {"line": "11", "append": "FORWARD", "source": "{{ network_objects_local.n_Voip.name }}", "dports": "{{ network_objects_global.p_udp_voip2 }}", "target": "ACCEPT"},
+        ]
+      },
+      r_Xebia: {
+        order: "08",
+        state: true,
+        comment: "vlan Xebia",
+        contents: [
+          {"line": "01", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "destination": "{{ network_objects_local.n_vpnAdmins.name }}", "target": "ACCEPT"},
+          {"line": "06", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "destination": "{{ network_objects_local.n_Reseau.name }}", "target": "ACCEPT"},
+          {"line": "04", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "destination": "{{ network_objects_local.n_Administratif.name }}", "target": "DROP"},
+          {"line": "05", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "destination": "{{ network_objects_local.n_vpnAdministratif.name }}", "target": "DROP"},
+          {"line": "08", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "destination": "{{ network_objects_local.n_Public.name }}", "target": "DROP"},
+          {"line": "09", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "dports": "{{ network_objects_global.p_tcp_torrent }}", "target": "DROP"},
+          {"line": "10", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "dports": "{{ network_objects_global.p_udp_torrent }}", "target": "DROP"},
+          {"line": "11", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "target": "ACCEPT"},
+      ]
+    }
+  }
+}
+
+#iptables: {
+#  hosts: {
+#    h_awsLvmh: {
+#      fqdn: "ec2-54-229-247-23.eu-west-1.compute.amazonaws.com"
+#    },
+#    h_intLvmh: {
+#      fqdn: "tracker-int.piis.louisvuitton.com"
+#    },
+#    h_pprodLvmh: {
+#      fqdn: "tracker-prp.piis.louisvuitton.com"
+#    },
+#    h_prodLvmh: {
+#      fqdn: "tracker.piis.louisvuitton.com"
+#    }
+#  },
+#  rules: {
+#
+#  }
+#}

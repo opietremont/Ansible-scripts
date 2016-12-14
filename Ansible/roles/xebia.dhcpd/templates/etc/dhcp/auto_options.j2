@@ -1,0 +1,14 @@
+{% if dns_domain is defined and dns_domain %}
+option domain-name "{{ dns_domain }}";
+option domain-search "{{ dns_domain }}";
+{% if dhcpd_ipversion is defined and dhcpd_ipversion == '6' %}
+option dhcp6.domain-search "{{ dns_domain }}";
+{% endif %}
+{% endif %}
+{% if dns_servers is defined and dns_servers %}
+{% if dhcpd_ipversion is defined and dhcpd_ipversion == '6' %}
+option dhcp6.name-servers {{ dns_servers.primary | ipv6 }}, {{ dns_servers.secondary | ipv6 }};
+{% else %}
+option domain-name-servers {{ dns_servers.primary | ipv4 }}, {{ dns_servers.secondary | ipv4 }};
+{% endif %}
+{% endif %}

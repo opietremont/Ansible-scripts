@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+{% if network_objects_global is defined and network_objects_global %}
+# ----------------
+#
+# Variables globales
+#
+# --- Services ---
+{% for key, value in network_objects_global.items() %}
+{% if value.category is defined and value.category == 'port' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+
+# --- Networks ---
+{% for key, value in network_objects_global.items() %}
+{% if value.category is defined and value.type == 'network' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+
+# ---- Hosts -----
+{% for key, value in network_objects_global.items() %}
+{% if value.category is defined and value.type == 'ip' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if network_objects_local is defined and network_objects_local %}
+# ----------------
+#
+# Variables locales
+#
+# --- Services ---
+{% for key, value in network_objects_local.items() %}
+{% if value.category is defined and value.category == 'port' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+
+# --- Networks ---
+{% for key, value in network_objects_local.items() %}
+{% if value.category is defined and value.type == 'network' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+
+# ---- Hosts -----
+{% for key, value in network_objects_local.items() %}
+{% if value.category is defined and value.type == 'ip' %}
+{{ key }}="{{ value.value }}"
+{% endif %}
+{% endfor %}
+{% endif %}

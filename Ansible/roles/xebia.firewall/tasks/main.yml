@@ -1,0 +1,111 @@
+#roles/xebia.firewall/tasks/main.yml
+---
+- name: Install IPTABLES.
+  apt:
+    pkg: iptables
+    state: present
+
+- name: Create Iptables folders.
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ iptables_conf_path }}"
+    - "{{ iptables_rules_available_path }}"
+    - "{{ iptables_rules_enabled_path }}"
+  register: dir_status
+  when: firewall_manage_config
+
+- name: Create firewall apps.
+  template:
+    src: firewall.j2
+    dest: "/etc/init.d/firewall"
+    owner: 'root'
+    group: 'root'
+    mode: '0744'
+  when: firewall_manage_config
+
+- name: Get existing available rules.
+  command: "find {{ iptables_rules_available_path }} -type f"
+  register: available_existing_rules
+  when: firewall_manage_config
+
+- name: Clean existing available rules.
+  file:
+    dest: "{{ item }}"
+    state: absent
+  when: not dir_status.changed and firewall_manage_config
+  with_items: "{{ available_existing_rules.stdout_lines | default([]) }}"
+
+- name: Get existing enabled rules.
+  command: "find {{ iptables_rules_enabled_path }} -type l"
+  register: enabled_existing_rules
+  when: firewall_manage_config
+
+- name: Clean existing enabled rules.
+  file:
+    dest: "{{ item }}"
+    state: absent
+  when: not dir_status.changed and firewall_manage_config
+  with_items: "{{ enabled_existing_rules.stdout_lines | default([]) }}"
+
+- name: Activate modules for Iptables.
+  template:
+    src: modules.j2
+    dest: "/etc/modules"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: yes
+  with_items:
+    - "{{ firewall }}"
+  when: firewall_manage_config
+
+- name: Configure Iptables.
+  template:
+    src: vars.j2
+    dest: "{{ iptables_conf_path }}/iptables.conf"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: firewall_manage_config
+
+- name: Set init Rule.
+  template:
+    src: common.j2
+    dest: "{{ iptables_rules_available_path }}/r_common"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items:
+    - "{{ firewall }}"
+  register: common_rule_status
+  when: firewall_manage_config
+
+- name: Activate init Rule.
+  file:
+    src: "{{ iptables_rules_available_path }}/r_common"
+    dest: "{{ iptables_rules_enabled_path }}/00_r_common"
+    state: link
+  when: common_rule_status.changed and firewall_manage_config
+
+- name: Set Rules.
+  template:
+    src: rules.j2
+    dest: "{{ iptables_rules_available_path }}/{{ item.key }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    force: yes
+  with_dict: "{{ firewall.rules }}"
+  register: rules_status
+  when: firewall_manage_config
+
+- name: Activate Rules.
+  file:
+    src: "{{ iptables_rules_available_path }}/{{ item.key }}"
+    dest: "{{ iptables_rules_enabled_path }}/{{ item.value.order }}_{{ item.key }}"
+    state: link
+  when: "{{ item.value.state }} and rules_status.changed and firewall_manage_config"
+  with_dict: "{{ firewall.rules }}"
+

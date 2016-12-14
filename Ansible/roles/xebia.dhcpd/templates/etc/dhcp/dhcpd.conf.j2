@@ -1,0 +1,44 @@
+{% import 'macros.j2' as tpl with context %}
+# {{ ansible_managed }}
+
+{% if dhcpd.authoritative is defined and dhcpd.authoritative %}
+authoritative;
+{% else %}
+not authoritative;
+{% endif %}
+{% if dhcpd.global_default_lease_time is defined and dhcpd.global_default_lease_time %}
+default-lease-time {{ dhcpd.global_default_lease_time }};
+{% endif %}
+{% if dhcpd.global_max_lease_time is defined and dhcpd.global_max_lease_time %}
+max-lease-time {{ dhcpd.global_max_lease_time }};
+{% endif %}
+{% if dhcpd.log_facility is defined and dhcpd.log_facility %}
+log-facility {{ dhcpd.log_facility }};
+{% endif %}
+
+{% if dhcpd_auto_options is defined and dhcpd_auto_options %}
+{% include 'auto_options.j2' %}
+{% endif %}
+
+{% if dhcpd.options is defined and dhcpd.options %}
+# Configuration options
+{{ dhcpd.options }}
+{% endif %}
+
+{% include 'ipxe.j2' %}
+
+{% if dhcpd.subnets is defined and dhcpd.subnets %}
+{% for key, value in dhcpd.subnets.items() %}
+{{ tpl.print_subnet(key, value) }}
+{% endfor %}
+{% endif %}
+
+{% if dhcpd.hosts is defined and dhcpd.hosts %}
+{{ tpl.print_hosts(dhcpd.hosts) }}
+{% endif %}
+
+{% if dhcpd.includes is defined and dhcpd.includes %}
+{% for include in dhcpd.includes %}
+include "{{ include }}";
+{% endfor %}
+{% endif %}

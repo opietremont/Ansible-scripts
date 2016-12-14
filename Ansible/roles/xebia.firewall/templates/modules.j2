@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+{% if item.modprobe is defined and item.modprobe %}
+{% for module in item.modprobe %}
+{{ module }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,10 @@
+{% import 'macros.j2' as tpl with context %}
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+{% if item.value.comment is defined and item.value.comment %}
+# {{ item.value.comment }}
+{% endif %}
+{% for content in item.value.contents %}
+{{ tpl.print_rules(content) }}
+{% endfor %}

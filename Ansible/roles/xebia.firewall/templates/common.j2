@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+{% if item.options.localhost is defined and item.options.localhost == true %}
+# Permit loopback
+$IPTABLES -A INPUT -i lo -j ACCEPT
+{% endif %}
+
+# Permit Established connexions.
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPTABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+{% if item.options.icmp is defined and item.options.icmp == true %}
+# Permit Ping.
+$IPTABLES -t filter -A INPUT -p icmp -j ACCEPT
+$IPTABLES -t filter -A OUTPUT -p icmp -j ACCEPT
+$IPTABLES -t filter -A FORWARD -p icmp -j ACCEPT
+{% endif %}
+
+# Permit default Remote Access.
+$IPTABLES -t filter -A INPUT -p tcp --dport ssh -j ACCEPT

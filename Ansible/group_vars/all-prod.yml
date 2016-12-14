@@ -1,0 +1,140 @@
+# file: group_vars/all.yml
+---
+#DNS Global variables:
+dns_servers: {
+  primary: "80.10.246.2",
+  secondary: "80.10.246.129"
+}
+dns_domain: 'xebia.local'
+
+# NTP Global variables:
+timezone: Europe/Paris
+ntp_servers:
+ - 0.fr.pool.ntp.org iburst
+ - 1.fr.pool.ntp.org iburst
+ - 2.fr.pool.ntp.org iburst
+ - 3.fr.pool.ntp.org iburst
+
+# FIREWALL Global variables:
+network_objects_global: {
+  p_tcp_reseaux: {
+    name: "p_tcp_reseaux",
+    category: "port",
+    type: "tcp",
+    value: "37,53,88,3128"
+  },
+  p_udp_reseaux: {
+    name: "p_udp_reseaux",
+    category: "port",
+    type: "udp",
+    value: "37,53,67:69,123"
+  },
+  p_tcp_public1: {
+    name: "p_tcp_public1",
+    category: "port",
+    type: "tcp",
+    value: "7,25,37,53,79:80,110,119,143,443,465,532,587"
+  },
+  p_tcp_public2: {
+    name: "p_tcp_public2",
+    category: "port",
+    type: "tcp",
+    value: "993,995,3128,5223,5297:5298,9428"
+  },
+  p_udp_public: {
+    name: "p_udp_public",
+    category: "port",
+    type: "udp",
+    value: "7,37,67:69,80,123,143,443"
+  },
+  p_tcp_torrent: {
+    name: "p_tcp_torrent",
+    category: "port",
+    type: "tcp",
+    value: "2710,6881:6999"
+  },
+  p_udp_torrent: {
+    name: "p_udp_torrent",
+    category: "port",
+    type: "tcp",
+    value: "1024:2426,2428:4499,4501:9999,10001:65535"
+  },
+  p_tcp_voip: {
+    name: "p_tcp_voip",
+    category: "port",
+    type: "tcp",
+    value: "53,80,443,554,1755,2427:2428,5060,5962"
+  },
+  p_udp_voip1: {
+    name: "p_udp_voip1",
+    category: "port",
+    type: "tcp",
+    value: "53,80,443,1755,2424,2427:2428,3478:3479"
+  },
+  p_udp_voip2: {
+    name: "p_udp_voip2",
+    category: "port",
+    type: "tcp",
+    value: "5004:5005,5060:5061,5962,8060,23000:24000,30000:40000"
+  },
+  p_tcp_synology: {
+    name: "p_tcp_synology",
+    category: "port",
+    type: "tcp",
+    value: "5000:5001"
+  },
+  n_rdc_etage: {
+    name: "n_rdc_etage",
+    category: "network",
+    type: "network",
+    value: "10.0.0.0/16"
+  },
+  n_3eme_etage: {
+    name: "n_3eme_etage",
+    category: "network",
+    type: "network",
+    value: "10.3.0.0/16"
+  },
+  n_7eme_etage: {
+    name: "n_7eme_etage",
+    category: "network",
+    type: "network",
+    value: "10.7.0.0/16"
+  },
+  h_rdc_orange: {
+    name: "h_rdc_orange",
+    category: "network",
+    type: "ip",
+    value: "193.248.58.247"
+  },
+  h_3eme_orange: {
+    name: "h_3eme_orange",
+    category: "network",
+    type: "ip",
+    value: "193.248.37.247"
+  },
+  h_7eme_orange: {
+    name: "h_7eme_orange",
+    category: "network",
+    type: "ip",
+    value: "193.248.49.240"
+  },
+  h_rdc_ovh: {
+    name: "h_rdc_ovh",
+    category: "network",
+    type: "ip",
+    value: "109.190.88.218"
+  },
+  h_3eme_ovh: {
+    name: "h_3eme_ovh",
+    category: "network",
+    type: "ip",
+    value: "109.190.184.164"
+  },
+  h_7eme_ovh: {
+    name: "h_7eme_ovh",
+    category: "network",
+    type: "ip",
+    value: "109.190.88.100"
+  }
+}

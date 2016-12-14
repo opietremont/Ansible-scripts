@@ -1,0 +1,5 @@
+dhcpd_conf_dir: "etc/dhcp/dhcpd.conf"
+dhcpd_default_dir: "etc/default/isc-dhcp-server"
+dhcpd_options: "-4"
+dhcpd_ipversion: "4"
+dhcpd_auto_options: true

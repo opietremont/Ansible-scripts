@@ -1,0 +1,49 @@
+{#
+#   IPTABLES Rules
+#   ===============================================
+#
+#   ---- Macro: print_rules() ----
+#}
+{% macro print_rules(contents) %}
+{% set line = '' %}
+{% if contents.table is defined and contents.table %}
+{% set line = [line, "$IPTABLES -t ", contents.table , " "]|join %}
+{% else %}
+{% set line = [line, "$IPTABLES -t filter "]|join %}
+{% endif %}
+{% if contents.append is defined and contents.append %}
+{% set line = [line, "-A ", contents.append, " "]|join %}
+{% else %}
+{% set line = [line, "-A FORWARD "]|join %}
+{% endif %}
+{% if contents.in is defined and contents.in %}
+{% set line = [line, "-i ", contents.in, " "]|join %}
+{% endif %}
+{% if contents.source is defined and contents.source %}
+{% set line = [line, "-s $", contents.source, " "]|join %}
+{% endif %}
+{% if contents.sports is defined and contents.sports %}
+{% if contents.sports.type is defined and contents.sports.type %}
+{% set line = [line, "-p ", contents.sports.type|string]|join %}
+{% endif %}
+{% set line = [line, " -m multiport --sports $", contents.sports.name|string," "]|join %}
+{% endif %}
+{% if contents.out is defined and contents.out %}
+{% set line = [line, "-o ", contents.out, " "]|join %}
+{% endif %}
+{% if contents.destination is defined and contents.destination %}
+{% set line = [line, "-d $", contents.destination, " "]|join %}
+{% endif %}
+{% if contents.dports is defined and contents.dports %}
+{% if contents.dports.type is defined and contents.dports.type %}
+{% set line = [line, "-p ", contents.dports.type|string]|join %}
+{% endif %}
+{% set line = [line, " -m multiport --dports $", contents.dports.name|string," "]|join %}
+{% endif %}
+{% if contents.target is defined and contents.target %}
+{% set line = [line, "-j ", contents.target]|join %}
+{% else %}
+{% set line = [line, "-j DROP"]|join %}
+{% endif %}
+{{ line }}
+{% endmacro %}

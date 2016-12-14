@@ -1,0 +1,83 @@
+# file: gateway.yml
+---
+
+- hosts: gateway
+  # user: sysadm
+  become: yes
+#  become_user: root
+#  become_method: su
+  roles :
+    - role: xebia.networking
+      tags :
+        - interfaces
+
+    - role: xebia.hosts
+      tags:
+        - hostname
+
+    - role: xebia.ntp
+      tags:
+        - ntp
+
+    - role: xebia.dhcpd
+      tags:
+        - dhcp
+
+    - role: xebia.firewall
+      tags:
+        - security
+
+  tasks:
+  - name: fish -> Add APT Key
+    apt_key: url=http://download.opensuse.org/repositories/shells:fish:release:2/Debian_8.0/Release.key state=present
+    
+  - name: fish -> Add APT Repository
+    apt_repository: repo='deb http://download.opensuse.org/repositories/shells:/fish:/release:/2/Debian_8.0/ /' state=present
+
+  - name: Update APT package cache
+    apt: update_cache=yes
+
+  - name: Install Monitoring tools
+    apt: pkg={{ item }} state=present
+    with_items:
+    - htop
+    - iotop
+    - sysstat
+    - dstat
+    - iftop
+
+  - name: Install Networking tools
+    apt: pkg={{ item }} state=present
+    with_items:
+    - iperf
+    - nmap
+    - tcpdump
+#    - network-manager
+
+  - name: Install Debugging tools
+    apt: pkg={{ item }} state=present
+    with_items:
+    - sysdig
+
+  - name: Install services & apps
+    apt: pkg={{ item }} state=present
+    with_items:
+    - fish
+# - shinken
+
+  - name: Configure console resolution
+    replace: dest=/etc/default/grub regexp='(\s+)GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"(\s+.*)?$' replace='\1GRUB_CMDLINE_LINUX_DEFAULT=\"splash xvga=1024x768x24\"\2'
+
+  # - name: Setup sudo for sysadm
+  #   lineinfile: "dest=/etc/sudoers state=present regexp='^sysadm' line='sysadm ALL=(ALL) NOPASSWD: ALL'"
+
+  - block:
+    - name: Get fish path
+      command: which fish
+      register: fish
+
+    - name: Setup fish as shell
+      user: name="{{ item }}" shell="{{ fish.stdout }}"
+      with_items:
+      - "{{ ansible_user }}"
+      - root

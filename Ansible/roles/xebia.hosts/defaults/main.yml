@@ -1,0 +1,4 @@
+#roles/xebia.hosts/defaults/main.yml
+---
+hosts_manage_config: false
+dns_domain: 'local'

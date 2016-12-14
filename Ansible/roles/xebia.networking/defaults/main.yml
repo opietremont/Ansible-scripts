@@ -1,0 +1,3 @@
+#roles/xebia.networking/defaults/main.yml
+---
+network_manage_config: false

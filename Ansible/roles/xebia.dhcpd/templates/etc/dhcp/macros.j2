@@ -1,0 +1,85 @@
+{#
+#   List of macros for ISC DHCP configuration, IPv4
+#   ===============================================
+#
+#   ---- Macro: print_subnet() ----
+#}
+{% macro print_subnet(key, value) %}
+{% if value.comment is defined and value.comment %}
+# {{ value.comment }}
+{% endif %}
+{% if dhcpd_ipversion is defined and dhcpd_ipversion == '6' %}
+subnet6 {{ value.router | ipaddr('network') + '/' + value.router | ipaddr('prefix') | string }} {
+{% else %}
+{% if value.router is defined and (value.router | ipaddr('network')) %}
+subnet {{ value.router | ipaddr('network') }} netmask {{ value.router | ipaddr('netmask') }} {
+{% endif %}
+{% endif %}
+{% if value.router is defined and value.router %}
+        option routers {{ value.router | ipaddr('address') | string }};
+{% endif %}
+{% if value.range is defined and value.range %}
+        range {{ value.range }};
+{% endif %}
+{% if value.options is defined and value.options %}
+{% for option in value.options %}
+{{ option | indent(8,true) }}
+{% endfor %}
+{% endif %}
+{% if value.include is defined and value.include %}
+        include "{{ value.include }}";
+{% endif %}
+{% if value.hosts is defined and value.hosts %}
+{{ print_hosts(value.hosts) | indent(8, true) }}
+{% endif %}
+}
+{% endmacro %}
+{#
+#
+#   ---- Macro: print_hosts() ----
+#   A refaire !!!
+#}
+{% macro print_hosts(hosts) %}
+{% if hosts is string %}
+include "{{ hosts }}";
+{% else %}
+{% for host in hosts %}
+{% if host.comment is defined and host.comment %}
+# {{ host.comment }}
+{% endif %}
+{# Hack to support host with multiple MACs #}
+{% if host.ethernet is defined and host.ethernet is sequence and not host.ethernet is string %}
+{% for hwaddr in host.ethernet %}
+host {{ host.hostname }}-hw{{ loop.index }} {
+{% if host.options is defined and host.options %}
+{{ host.options | indent(8,true) }}
+{% endif %}
+        hardware ethernet {{ hwaddr }};
+{% if not host.options is defined or (host.options and not 'host-name' in host.options) %}
+        option host-name "{{ host.hostname }}";
+{% endif %}
+{% if host.address is defined and host.address %}
+        fixed-address {{ host.address }};
+{% endif %}
+}
+{% endfor %}
+{% else %}
+host {{ host.hostname }} {
+{% if host.options is defined and host.options %}
+{{ host.options | indent(8,true) }}
+{% endif %}
+{% if host.ethernet is defined and host.ethernet %}
+        hardware ethernet {{ host.ethernet }};
+{% endif %}
+{% if host.address is defined and host.address %}
+{% if dhcpd_ipversion is defined and dhcpd_ipversion == '6' %}
+        fixed-address6 {{ host.address }};
+{% else %}
+        fixed-address {{ host.address }};
+{% endif %}
+{% endif %}
+}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endmacro %}
