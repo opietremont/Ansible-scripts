@@ -105,62 +105,62 @@ network_interfaces: {
 }
 
 dhcpd: {
-	mode: "server",
-	authoritative: true,
-	log_facility: "local7",
-	interfaces: [ "vlan100", "vlan101", "vlan110", "vlan111", "vlan112", "vlan300", "vlan400" ],
-	global_default_lease_time: "600",
-	global_max_lease_time: "7200",
-	subnets: {
-		vlan100: {
-		  comment: "VLAN100 : Public - Generated automatically by Ansible",
-          range: "10.6.101.0 10.6.102.255",
-          router: "10.6.100.1/22",
-		},
-		vlan101: {
-		  comment: "VLAN101 : Client - Generated automatically by Ansible",
-          range: "10.6.105.0 10.6.106.255",
-          router: "10.6.104.1/22",
-		},
-		vlan110: {
-		  comment: "VLAN110 : VoIP - Generated automatically by Ansible",
-          range: "10.6.5.0 10.6.6.255",
-          router: "10.6.4.1/22",
-          options: [
-            "default-lease-time 3600;",
-            "max-lease-time 86400;"]
-		},
-		vlan111: {
-		  comment: "VLAN111 : Comptabilite - Generated automatically by Ansible",
-          range: "10.6.9.0 10.6.10.255",
-          router: "10.6.8.1/22",
-		},
-		vlan112: {
-          comment: "VLAN112 : Xebia - Generated automatically by Ansible",
-          range: "10.6.13.0 10.6.14.255",
-          router: "10.6.12.1/22",
-          options: [
-            "default-lease-time 3600;",
-            "max-lease-time 86400;"]
-		},
-		vlan300: {
-		  comment: "VLAN300 : Video-surveillance - Generated automatically by Ansible",
-          range: "10.6.201.0 10.6.202.255",
-          router: "10.6.200.1/22",
-          options: [
-            "default-lease-time 3600;",
-            "max-lease-time 86400;"]
-		},
-		vlan400: {
-		  comment: "VLAN400 : Reseaux - Generated automatically by Ansible",
-          range: "10.6.1.0 10.6.2.255",
-          router: "10.6.0.1/22",
-          options: [
-            "default-lease-time 3600;",
-            "max-lease-time 86400;"]
-		}
-	},
-	include: "/etc/dhcp/dhcp-hosts.conf"
+  mode: "server",
+  authoritative: true,
+  log_facility: "local7",
+  interfaces: [ "vlan100", "vlan101", "vlan110", "vlan111", "vlan112", "vlan300", "vlan400" ],
+  global_default_lease_time: "600",
+  global_max_lease_time: "7200",
+  subnets: {
+    vlan100: {
+      comment: "VLAN100 : Public - Generated automatically by Ansible",
+      range: "10.6.101.0 10.6.102.255",
+      router: "10.6.100.1/22",
+    },
+    vlan101: {
+      comment: "VLAN101 : Client - Generated automatically by Ansible",
+      range: "10.6.105.0 10.6.106.255",
+      router: "10.6.104.1/22",
+    },
+    vlan110: {
+      comment: "VLAN110 : VoIP - Generated automatically by Ansible",
+      range: "10.6.5.0 10.6.6.255",
+      router: "10.6.4.1/22",
+      options: [
+        "default-lease-time 3600;",
+        "max-lease-time 86400;"]
+    },
+    vlan111: {
+      comment: "VLAN111 : Comptabilite - Generated automatically by Ansible",
+      range: "10.6.9.0 10.6.10.255",
+      router: "10.6.8.1/22",
+    },
+    vlan112: {
+      comment: "VLAN112 : Xebia - Generated automatically by Ansible",
+      range: "10.6.13.0 10.6.14.255",
+      router: "10.6.12.1/22",
+      options: [
+        "default-lease-time 3600;",
+        "max-lease-time 86400;"]
+    },
+    vlan300: {
+      comment: "VLAN300 : Video-surveillance - Generated automatically by Ansible",
+      range: "10.6.201.0 10.6.202.255",
+      router: "10.6.200.1/22",
+      options: [
+        "default-lease-time 3600;",
+        "max-lease-time 86400;"]
+    },
+    vlan400: {
+      comment: "VLAN400 : Reseaux - Generated automatically by Ansible",
+      range: "10.6.1.0 10.6.2.255",
+      router: "10.6.0.1/22",
+      options: [
+        "default-lease-time 3600;",
+        "max-lease-time 86400;"]
+    }
+  },
+  include: "/etc/dhcp/dhcp-hosts.conf"
 }
 
 network_objects_local: {
