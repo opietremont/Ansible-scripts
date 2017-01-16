@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+#-----
+# Description :
+# Table USE : Remplace la table de routage par defaut mais contient l'ensemble des routes necessaires au reseau.
+# Table ORANGE : Definit la table de routage specifique pour l'interface Orange afin de realiser un test de ping directement depuis via son IP et en utilisant sa propre passerelle.
+# Table OVH : Definit la table de routage specifique pour l'interface Ovh afin de realiser un test de ping directement depuis via son IP et en utilisant sa propre passerelle.
+#----
+
+# Table USE
+{% if item.1 is defined and item.1 %}
+{% set table = item.1.split('\n')%}
+{% for value in table %}
+ip add route {{ value }} table use
+{% endfor %}
+{% endif %}
+
+ip rules add from all table use
+
+#Table ORANGE
+ip route add default via {{ route_rules_local.use.gateway }} table orange
+ip route add {{ route_rules_local.use.ipaddr }}/32 dev {{ route_rules_local.use.interface }} table orange
+
+ip rule add from {{ route_rules_local.orange.ipaddr }}/32 table orange
+ip rule add to {{ route_rules_local.orange.ipaddr }}/32 table orange
+
+#Table OVH
+{% if item.0 is defined and item.0 and item.2 is defined and item.2 %}
+ip route add default via {{ item.2 }} table ovh
+ip route add {{ item.0 }}/32 dev {{ route_rules_local.ovh.interface }} table ovh
+
+ip rule add from {{ item.0 }}/32 table ovh
+ip rule add to {{ item.0 }}/32 table ovh
+{% endif %}

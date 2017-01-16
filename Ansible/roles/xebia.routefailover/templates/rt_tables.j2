@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+#
+# reserved values
+#
+255     local
+254     main
+253     default
+0       unspec
+#
+# local
+#
+#1      inr.ruhep
+{% for key, value in route_rules_local.items() %}
+{% if value.number is defined and value.number %}
+{{ value.number }} {{ key }}
+{% endif %}
+{% endfor %}

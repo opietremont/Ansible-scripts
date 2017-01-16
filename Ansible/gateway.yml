@@ -26,6 +26,10 @@
       tags:
         - security
 
+    - role: xebia.routefailover
+      tags:
+        - routes
+
   tasks:
   - name: fish -> Add APT Key
     apt_key: url=http://download.opensuse.org/repositories/shells:fish:release:2/Debian_8.0/Release.key state=present

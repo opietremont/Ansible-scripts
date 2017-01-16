@@ -2,12 +2,12 @@
 ---
 ansible_host: "10.3.120.10"
 ansible_hostname: "X3-router-003"
-network_manage_config: true
-hosts_manage_config: true
-ntp_manage_config: true
-dhcp_manage_config: true
-firewall_manage_config: true
-
+#network_manage_config: true
+#hosts_manage_config: true
+#ntp_manage_config: true
+#dhcp_manage_config: true
+#firewall_manage_config: true
+route_failover_active: true
 
 network_interfaces: {
   eth0: {
@@ -38,10 +38,11 @@ network_interfaces: {
     gateway: "10.3.120.1",
     vlan: false,
     auto: true,
-    allow: "hotplug"
+    allow: "hotplug",
+    default: "true"
 #    mode: "static",
 #    cidr: "192.168.0.254/24",
-##    gateway: "192.168.0.1",
+#    gateway: "192.168.0.1",
 #    vlan: false,
 #    auto: true,
 #    allow: "hotplug"
@@ -348,5 +349,28 @@ firewall: {
           {"line": "11", "append": "FORWARD", "source": "{{ network_objects_local.n_Xebia.name }}", "target": "ACCEPT"},
       ]
     }
+  }
+}
+
+route_rules_local: {
+  target: {
+    ipaddr: "8.8.8.8",
+    iteration: "4"
+  },
+  ovh: {
+    number: "100",
+    interface: "eth2",
+  },
+  orange: {
+    number: "200",
+    interface: "eth3",
+    ipaddr: "10.3.120.10",
+    gateway: "10.3.120.1"
+  },
+  use: {
+    number: "300",
+    interface: "eth3",
+    ipaddr: "10.6.0.0/16",
+    gateway: "10.3.120.1"
   }
 }

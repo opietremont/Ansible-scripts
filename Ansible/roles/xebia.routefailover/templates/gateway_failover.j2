@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# {{ ansible_managed }}
+
+import subprocess
+import os
+import logging
+from logging.handlers import SysLogHandler
+
+# Initialisation des Logs
+LOGGER = logging.getLogger()
+
+# Parametres Ansible de Debug
+DEBUG = {{ enable_debug }}
+if DEBUG == 1:
+    LOGGER.setLevel(logging.DEBUG)
+else:
+    LOGGER.setLevel(logging.INFO)
+
+FORMAT_LOG = "failover[%(process)d]: [%(levelname)s] %(message)s - (%(name)s)"
+FORMATTER = logging.Formatter(FORMAT_LOG)
+
+# Logs envoyes dans /var/log/syslog
+FILE_HANDLER = SysLogHandler('/dev/log')
+FILE_HANDLER.setFormatter(FORMATTER)
+LOGGER.addHandler(FILE_HANDLER)
+
+# Definition des variables
+{% if route_rules_local.target.ipaddr is defined and route_rules_local.target.ipaddr %}
+ping_target = "{{ route_rules_local.target.ipaddr }}" # Doit etre accessible depuis les deux interfaces.
+{% endif %}
+ping_response_ovh = 0
+ping_response_orange = 0
+
+# Tests si les regles de routage sont existantes
+route_show_cmd = subprocess.Popen(['ip', 'route', 'show', 'table', 'use'], stdout=subprocess.PIPE)
+route_show_output = route_show_cmd.communicate()[0]
+LOGGER.debug(route_show_cmd.poll())
+
+if route_show_cmd.poll() == 0:
+# Execution d'un ping depuis chacune des interfaces vers une cible commune definie et concatenation du resultat (+ 256 par echec)
+{% if route_rules_local.target.iteration is defined and route_rules_local.target.iteration and route_rules_local.orange.interface is defined and route_rules_local.orange.interface and route_rules_local.ovh.interface is defined and route_rules_local.ovh.interface %}
+    for i in range(0, {{ route_rules_local.target.iteration }}):
+        ping_response_orange += int(os.system('ping -I {{ route_rules_local.orange.ipaddr }} -c 1 {} -w 1'.format(ping_target)))
+        ping_response_ovh += int(os.system('ping -I {{ item.ipaddr }} -c 1 {} -w 1'.format(ping_target)))
+
+    LOGGER.debug('Value Orange - %s', str(ping_response_orange))
+    LOGGER.debug('Value Ovh - %s', str(ping_response_ovh))
+
+    # Si Orange est OUT (4 x 256 donc 4 echec depuis l'interface Orange vers la cible) alors on route les paquets via l'interface OVH
+    if ping_response_orange == 1024:
+        # A FAIRE :
+        # Les deux interfaces sont OUT
+        # --> web service pour sigfox
+        LOGGER.info('Lien Orange OUT, utilisation du lien Ovh')
+        LOGGER.debug('exec routes_via_eth2.sh')
+        subprocess.call("{{ scripts_dir }}/routes_via_{{ route_rules_local.ovh.interface }}.sh")
+
+    # Sinon on s'assure que Orange est bien la route par defaut
+    else:
+        LOGGER.debug('Lien Orange OK, verification de la route par defaut')
+        for line in route_show_output.split('\n'):
+            LOGGER.debug('line %s', line)
+            if ('{{ route_rules_local.ovh.interface }}' in line and 'default' in line):
+                subprocess.call("{{ scripts_dir }}/routes_via_{{ route_rules_local.orange.interface }}.sh")
+                LOGGER.info('Lien Orange OK, utilisation du lien Orange')
+                LOGGER.debug('exec routes_via_eth3.sh')
+
+else:
+    subprocess.call("{{ scripts_dir }}/routes_init.sh")
+    LOGGER.info('Initialisation des regles de routage')
+    LOGGER.debug('exec routes_init.sh')
+
+{% endif %}
