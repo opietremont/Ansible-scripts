@@ -1,0 +1,63 @@
+---
+
+- name: Configure route tables.
+  template:
+    src: rt_tables.j2
+    dest: "{{ rt_tables_file }}"
+
+- name: Get IP Address from eth2.
+  shell: >-
+    ip addr | grep 'eth2' -A0 | tail -n1 |awk '{print $2}' | cut -f1  -d'/'
+  register: eth2_ip
+
+- name: Get IP Router from eth2.
+  shell: >-
+    cat /var/lib/dhcp/dhclient.eth2.leases | grep 'routers' | tail -n1 | awk '{print $3}' | cut -f1  -d';'
+  register: eth2_gw
+
+- name: Assign value to ovh var.
+  set_fact:
+    ovh:
+      ipaddr: "{{ eth2_ip.stdout }}"
+      gateway: "{{ eth2_gw.stdout }}"
+      interface: "eth2"
+
+- name: Get route established.
+  shell: >-
+    ip route show
+  register: route_table
+
+- name: Create failover python script.
+  template:
+    src: gateway_failover.j2
+    dest: '{{ scripts_dir }}/gateway_failover.py'
+    owner: root
+    mode: 0744
+  with_items:
+    - "{{ ovh }}"
+
+- name: Create init bash script of routing rules.
+  template:
+    src: routes_init.j2
+    dest: '{{ scripts_dir }}/routes_init.sh'
+    owner: root
+    mode: 0744
+  with_together:
+    - "{{ ovh.ipaddr }}"
+    - "{{ route_table.stdout }} "
+    - "{{ ovh.gateway }}"
+
+- name: Create interface bash script of routing rules.
+  template:
+    src: routes_via.j2
+    dest: '{{ scripts_dir }}/routes_via_{{ item.interface }}.sh'
+    owner: root
+    mode: 0744
+  with_items:
+    - "{{ ovh }}"
+    - "{{ route_rules_local.orange }}"
+
+- name: Add failover python script to cron.d
+  cron:
+    name: "survey default routes"
+    job: "{{ scripts_dir }}/gateway_failover.py"
