@@ -1,0 +1,25 @@
+---
+- name: Set Localtime.
+  file:
+    src: "/usr/share/zoneinfo/{{ timezone }}"
+    dest: /etc/localtime
+    state: link
+    force: yes
+
+- name: Set Timezone.
+  template:
+    src: timezone.j2
+    dest: /etc/timezone
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    force: yes
+
+- name: Configure NTP Service.
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: Synchronize ntp
